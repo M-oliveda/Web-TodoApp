@@ -14,6 +14,8 @@
     "prettier:format": "prettier . --write"
   },
   "devDependencies": {
+    "@parcel/packager-raw-url": "2.9.3",
+    "@parcel/transformer-webmanifest": "2.9.3",
     "parcel": "^2.9.3",
     "prettier": "^3.0.3"
   }
