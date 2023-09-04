@@ -1,0 +1,20 @@
+{
+  "name": "to-do-web-app-html-css-js",
+  "version": "1.0.0",
+  "description": "This is a HTML, CSS and JavaScript learning project called To do Web App.",
+  "repository": "https://github.com/M-oliveda/Web-TodoApp.git",
+  "author": "Mauricio Oliveda <maurioliveda@gmail.com>",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "test": "echo 'Hello World!'",
+    "parcel:dev": "parcel './web/src/index.html' --dist-dir './web/dist' --no-source-maps",
+    "parcel:build": "parcel build './web/src/index.html' --dist-dir './web/public' --no-source-maps",
+    "prettier:check": "prettier . --check",
+    "prettier:format": "prettier . --write"
+  },
+  "devDependencies": {
+    "parcel": "^2.9.3",
+    "prettier": "^3.0.3"
+  }
+}
