@@ -13,6 +13,15 @@ body {
   color: #1a132f;
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .website-header {
   width: 80%;
   max-width: 1200px;
@@ -66,6 +75,12 @@ body {
   }
 }
 
+@media (min-width: 1080px) {
+  .calendar > #calendarMonth {
+    font-size: 16px;
+  }
+}
+
 .calendar > #calendarDate {
   border-radius: 0px 0px 4px 4px;
   border: 2px solid var(--Primary-Color, #5b7db1);
@@ -88,8 +103,14 @@ body {
   }
 }
 
+@media (min-width: 1080px) {
+  .calendar > #calendarDate {
+    font-size: 16px;
+  }
+}
+
 .website-header__title {
-  margin-left: 32px;
+  margin-left: 16px;
 
   font-size: 16px;
   font-weight: 700;
@@ -98,6 +119,7 @@ body {
 
 @media (min-width: 720px) {
   .website-header__title {
+    margin-left: 32px;
     font-size: 22px;
   }
 }
@@ -107,7 +129,7 @@ body {
 
   position: absolute;
   right: 0;
-  top: 0;
+  top: 20%;
 
   display: flex;
   flex-flow: column nowrap;
@@ -149,7 +171,6 @@ body {
   list-style: none;
 
   background-color: #fff;
-  opacity: 0;
   overflow: hidden;
 }
 
@@ -159,7 +180,7 @@ body {
 
 .filter-box__container-active {
   display: block;
-  opacity: 1;
+  animation: fade-in 1.2s cubic-bezier(0.39, 0.575, 0.565, 1) both;
 }
 
 .filter-box__filter-task {
@@ -170,7 +191,7 @@ body {
 
   color: rgba(26, 19, 47, 0.6);
   font-family: "Roboto", sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
 
   cursor: pointer;
@@ -179,7 +200,7 @@ body {
 @media (min-width: 720px) {
   .filter-box__filter-task {
     padding: 16px 24px;
-    font-size: 12px;
+    font-size: 14px;
   }
 }
 

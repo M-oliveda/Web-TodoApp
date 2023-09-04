@@ -25,7 +25,6 @@ function setTimeCalendar() {
 }
 
 function filterTasks(typeTask) {
-  console.log("Button clicked!");
   switch (typeTask) {
     case "completed":
       document
