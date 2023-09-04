@@ -30,5 +30,29 @@
     <link rel="stylesheet" href="./css/styles.css" />
     <title>HTML, CSS and JavaScript Project: To do Web Application</title>
   </head>
-  <body></body>
+  <body>
+    <header class="website-header">
+      <div class="calendar">
+        <span id="calendarMonth"></span>
+        <span id="calendarDate"></span>
+      </div>
+      <p class="website-header__title">Today</p>
+      <div class="website-header__filter-box">
+        <button class="filter-box__button" id="filterBoxButton"></button>
+        <menu class="filter-box__container" id="filterBoxContainer">
+          <li>
+            <button class="filter-box__filter-task" id="filterByCompletedTask">
+              Completed
+            </button>
+          </li>
+          <li>
+            <button class="filter-box__filter-task" id="filterByInProgressTask">
+              In Progress
+            </button>
+          </li>
+        </menu>
+      </div>
+    </header>
+    <script src="./js/main.js"></script>
+  </body>
 </html>
