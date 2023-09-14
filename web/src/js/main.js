@@ -24,6 +24,17 @@ function setTimeCalendar() {
   dateSpanBox.appendChild(document.createTextNode(currentDate.getDate()));
 }
 
+function displayTasks(tasks) {
+  const taskContainer = document.querySelector(".tasks");
+  while (taskContainer.lastElementChild) {
+    taskContainer.removeChild(taskContainer.lastElementChild);
+  }
+
+  for (let task of tasks) {
+    addNewTask(task.value, task.taskId, task.isCompleted);
+  }
+}
+
 function filterTasks(typeTask) {
   switch (typeTask) {
     case "completed":
@@ -45,9 +56,22 @@ function filterTasks(typeTask) {
     default:
       console.error("You insert the wrong type task filter.");
   }
+
+  const filteredTasks = [];
+
+  for (let index = 1; index <= window.sessionStorage.length; index++) {
+    const task = JSON.parse(window.sessionStorage[index]);
+    if (typeTask == "completed" && task.isCompleted) {
+      filteredTasks.push(task);
+    } else if (typeTask == "in progress" && !task.isCompleted) {
+      filteredTasks.push(task);
+    }
+  }
+
+  displayTasks(filteredTasks);
 }
 
-function addNewTask() {
+function addNewTask(taskValue, taskId, isCompleted) {
   const newTaskContainer = document.createElement("li");
   const newTask = document.createElement("div");
   const newTaskIcon = document.createElement("button");
@@ -59,7 +83,16 @@ function addNewTask() {
   newTaskText.classList.add("task__text");
   newTaskDeleteIcon.classList.add("task__delete-icon");
 
-  newTask.setAttribute("taskId", (window.sessionStorage.length + 1).toString());
+  newTask.setAttribute(
+    "taskId",
+    taskId || (window.sessionStorage.length + 1).toString(),
+  );
+
+  if (isCompleted) {
+    newTaskIcon.classList.add("task__icon-completed");
+  }
+
+  newTaskIcon.setAttribute("type", "button");
 
   newTaskIcon.addEventListener("click", (e) => {
     e.target.classList.toggle("task__icon-completed");
@@ -67,9 +100,13 @@ function addNewTask() {
   });
 
   newTaskText.addEventListener("focusout", (e) => {
+    if (newTaskText.value === "") {
+      e.target.parentElement.parentElement.remove();
+      return;
+    }
     const taskInfo = {
       taskId: e.target.parentElement.getAttribute("taskId"),
-      isCompleted: false,
+      isCompleted: isCompleted || false,
       value: e.target.value,
     };
 
@@ -79,10 +116,20 @@ function addNewTask() {
     );
   });
 
+  newTaskText.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      addNewTask();
+    }
+  });
+
+  newTaskDeleteIcon.setAttribute("type", "button");
+
   newTaskDeleteIcon.addEventListener("click", (e) => {
     e.target.parentElement.parentElement.remove();
     deleteTask(e.target.parentElement.getAttribute("taskId"));
   });
+
+  newTaskText.value = taskValue || null;
 
   newTaskContainer.append(newTask);
   newTask.append(newTaskIcon, newTaskText, newTaskDeleteIcon);
