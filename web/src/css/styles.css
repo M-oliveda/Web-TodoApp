@@ -184,6 +184,7 @@ body {
 }
 
 .filter-box__filter-task {
+  display: block;
   padding: 8px 16px;
   border: none;
 
@@ -204,7 +205,11 @@ body {
   }
 }
 
-.filter-selected {
+.filter-box__filter-task input[type="radio"] {
+  display: none;
+}
+
+.filter-box__filter-task input:checked + span {
   color: var(--primary-color);
 }
 
@@ -237,6 +242,10 @@ body {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+}
+
+.task-invisible {
+  display: none;
 }
 
 .task:hover {

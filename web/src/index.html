@@ -41,14 +41,32 @@
         <button class="filter-box__button" id="filterBoxButton"></button>
         <menu class="filter-box__container" id="filterBoxContainer">
           <li>
-            <button class="filter-box__filter-task" id="filterByCompletedTask">
-              Completed
-            </button>
+            <label for="taskTypeInProgress" class="filter-box__filter-task">
+              <input
+                type="radio"
+                name="taskType"
+                value="in progress"
+                id="taskTypeInProgress"
+              />
+              <span>In Progress</span>
+            </label>
+            <!-- <button class="filter-box__filter-task" id="filterByInProgressTask">
+              In Progress
+            </button> -->
           </li>
           <li>
-            <button class="filter-box__filter-task" id="filterByInProgressTask">
-              In Progress
-            </button>
+            <label for="taskTypeCompleted" class="filter-box__filter-task">
+              <input
+                type="radio"
+                name="taskType"
+                value="completed"
+                id="taskTypeCompleted"
+              />
+              <span>Completed </span>
+            </label>
+            <!-- <button class="filter-box__filter-task" id="filterByCompletedTask">
+              Completed
+            </button> -->
           </li>
         </menu>
       </div>

@@ -24,54 +24,58 @@ function setTimeCalendar() {
   dateSpanBox.appendChild(document.createTextNode(currentDate.getDate()));
 }
 
-function displayTasks(tasks) {
-  const taskContainer = document.querySelector(".tasks");
-  while (taskContainer.lastElementChild) {
-    taskContainer.removeChild(taskContainer.lastElementChild);
-  }
-
-  for (let task of tasks) {
-    addNewTask(task.value, task.taskId, task.isCompleted);
-  }
+function setUpSessionStorage() {
+  window.sessionStorage.setItem("taskIdGenerator", "0");
+  window.sessionStorage.setItem("tasks", JSON.stringify([]));
 }
 
-function filterTasks(typeTask) {
-  switch (typeTask) {
-    case "completed":
-      document
-        .querySelector("#filterByCompletedTask")
-        .classList.add("filter-selected");
-      document
-        .querySelector("#filterByInProgressTask")
-        .classList.remove("filter-selected");
-      break;
-    case "in progress":
-      document
-        .querySelector("#filterByInProgressTask")
-        .classList.add("filter-selected");
-      document
-        .querySelector("#filterByCompletedTask")
-        .classList.remove("filter-selected");
-      break;
-    default:
-      console.error("You insert the wrong type task filter.");
-  }
+window.addEventListener("load", () => {
+  setTimeCalendar();
+  setUpSessionStorage();
+});
 
-  const filteredTasks = [];
+document.querySelector("#filterBoxButton").addEventListener("click", () => {
+  document
+    .querySelector("#filterBoxButton")
+    .classList.toggle("filter-box__button-expanded");
 
-  for (let index = 1; index <= window.sessionStorage.length; index++) {
-    const task = JSON.parse(window.sessionStorage[index]);
-    if (typeTask == "completed" && task.isCompleted) {
-      filteredTasks.push(task);
-    } else if (typeTask == "in progress" && !task.isCompleted) {
-      filteredTasks.push(task);
+  document
+    .querySelector("#filterBoxContainer")
+    .classList.toggle("filter-box__container-active");
+});
+
+document.querySelectorAll(".filter-box__filter-task").forEach((item) =>
+  item.addEventListener("click", (e) => {
+    if (e.target.checked) {
+      filterTasks(e.target.value);
     }
-  }
+  }),
+);
 
-  displayTasks(filteredTasks);
+function filterTasks(taskType) {
+  document.querySelectorAll(".task").forEach((task) => {
+    task.parentElement.style = null;
+  });
+
+  if (taskType == "in progress") {
+    document.querySelectorAll(".task__icon-completed").forEach((task) => {
+      task.parentElement.parentElement.style = "display: none;";
+    });
+  } else if (taskType == "completed") {
+    document.querySelectorAll(".task").forEach((task) => {
+      task.parentElement.style = "display: none";
+    });
+    document.querySelectorAll(".task__icon-completed").forEach((task) => {
+      task.parentElement.parentElement.style = "display: block;";
+    });
+  }
 }
 
-function addNewTask(taskValue, taskId, isCompleted) {
+document
+  .querySelector("#addNewTask")
+  .addEventListener("click", () => addNewTask());
+
+function addNewTask() {
   const newTaskContainer = document.createElement("li");
   const newTask = document.createElement("div");
   const newTaskIcon = document.createElement("button");
@@ -85,12 +89,10 @@ function addNewTask(taskValue, taskId, isCompleted) {
 
   newTask.setAttribute(
     "taskId",
-    taskId || (window.sessionStorage.length + 1).toString(),
+    (parseInt(window.sessionStorage.getItem("taskIdGenerator")) + 1).toString(),
   );
 
-  if (isCompleted) {
-    newTaskIcon.classList.add("task__icon-completed");
-  }
+  newTask.setAttribute("completed", "false");
 
   newTaskIcon.setAttribute("type", "button");
 
@@ -104,21 +106,39 @@ function addNewTask(taskValue, taskId, isCompleted) {
       e.target.parentElement.parentElement.remove();
       return;
     }
-    const taskInfo = {
-      taskId: e.target.parentElement.getAttribute("taskId"),
-      isCompleted: isCompleted || false,
-      value: e.target.value,
-    };
 
-    window.sessionStorage.setItem(
-      e.target.parentElement.getAttribute("taskId"),
-      JSON.stringify(taskInfo),
-    );
-  });
+    const tasks = JSON.parse(window.sessionStorage.getItem("tasks"));
 
-  newTaskText.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      addNewTask();
+    if (
+      tasks.some(
+        (task) => task.taskId == e.target.parentElement.getAttribute("taskId"),
+      )
+    ) {
+      tasks[
+        tasks.findIndex(
+          (task) =>
+            task.taskId == e.target.parentElement.getAttribute("taskId"),
+        )
+      ].value = e.target.value;
+      window.sessionStorage.setItem("tasks", JSON.stringify(tasks));
+    } else {
+      const newTaskInfo = {
+        taskId: e.target.parentElement.getAttribute("taskId"),
+        isCompleted: false,
+        value: e.target.value,
+      };
+
+      tasks.push(newTaskInfo);
+
+      window.sessionStorage.setItem("tasks", JSON.stringify(tasks));
+
+      const newIdGeneratorValue =
+        parseInt(window.sessionStorage.getItem("taskIdGenerator")) + 1;
+
+      window.sessionStorage.setItem(
+        "taskIdGenerator",
+        newIdGeneratorValue.toString(),
+      );
     }
   });
 
@@ -129,8 +149,6 @@ function addNewTask(taskValue, taskId, isCompleted) {
     deleteTask(e.target.parentElement.getAttribute("taskId"));
   });
 
-  newTaskText.value = taskValue || null;
-
   newTaskContainer.append(newTask);
   newTask.append(newTaskIcon, newTaskText, newTaskDeleteIcon);
 
@@ -140,36 +158,33 @@ function addNewTask(taskValue, taskId, isCompleted) {
 }
 
 function toggleTaskCompletion(taskId) {
-  const taskObj = JSON.parse(window.sessionStorage.getItem(taskId));
+  const tasks = JSON.parse(window.sessionStorage.getItem("tasks"));
 
-  window.sessionStorage.setItem(
-    taskId,
-    JSON.stringify({ ...taskObj, isCompleted: !taskObj.isCompleted }),
-  );
+  tasks[tasks.findIndex((task) => task.taskId == taskId)].isCompleted =
+    !tasks[tasks.findIndex((task) => task.taskId == taskId)].isCompleted;
+
+  window.sessionStorage.setItem("tasks", JSON.stringify(tasks));
+
+  taskCompletedValue = document
+    .querySelector(`[taskId='${taskId}']`)
+    .getAttribute("completed");
+
+  if (taskCompletedValue == "false") {
+    document
+      .querySelector(`[taskId='${taskId}']`)
+      .setAttribute("completed", "true");
+  } else {
+    document
+      .querySelector(`[taskId='${taskId}']`)
+      .setAttribute("completed", "false");
+  }
 }
 
 function deleteTask(taskId) {
-  window.sessionStorage.removeItem(taskId);
-}
+  const tasks = JSON.parse(window.sessionStorage.getItem("tasks"));
 
-window.addEventListener("load", () => setTimeCalendar());
-
-document.querySelector("#filterBoxButton").addEventListener("click", () => {
-  document
-    .querySelector("#filterBoxButton")
-    .classList.toggle("filter-box__button-expanded");
-
-  document
-    .querySelector("#filterBoxContainer")
-    .classList.toggle("filter-box__container-active");
-});
-
-document
-  .querySelectorAll(".filter-box__filter-task")
-  .forEach((e) =>
-    e.addEventListener("click", () => filterTasks(e.innerText.toLowerCase())),
+  window.sessionStorage.setItem(
+    "tasks",
+    JSON.stringify(tasks.filter((task) => task.taskId != taskId)),
   );
-
-document
-  .querySelector("#addNewTask")
-  .addEventListener("click", () => addNewTask());
+}
